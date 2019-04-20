@@ -1,8 +1,9 @@
+import java.io.Serializable;
 
-public class Entry {
+public class Entry implements Serializable {
 	private String source;
 	private String dest;
-	private int nexthop;
+	private String nexthop;
 	private float cost;
 	
 	//default constructor
@@ -11,7 +12,7 @@ public class Entry {
 	}
 
 	//constructor with fields
-	public Entry(String source, String dest, int nexthop, float cost) {
+	public Entry(String source, String dest, String nexthop, float cost) {
 		super();
 		this.source = source;
 		this.dest = dest;
@@ -35,11 +36,11 @@ public class Entry {
 		this.dest = dest;
 	}
 
-	public int getNexthop() {
+	public String getNexthop() {
 		return nexthop;
 	}
 
-	public void setNexthop(int nexthop) {
+	public void setNexthop(String nexthop) {
 		this.nexthop = nexthop;
 	}
 
