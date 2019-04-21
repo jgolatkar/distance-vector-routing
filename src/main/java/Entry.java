@@ -1,17 +1,21 @@
 import java.io.Serializable;
 
 public class Entry implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String source;
 	private String dest;
 	private String nexthop;
 	private float cost;
-	
-	//default constructor
+
+	// default constructor
 	public Entry() {
 
 	}
 
-	//constructor with fields
+	// constructor with fields
 	public Entry(String source, String dest, String nexthop, float cost) {
 		super();
 		this.source = source;
@@ -51,7 +55,5 @@ public class Entry implements Serializable {
 	public void setCost(float cost) {
 		this.cost = cost;
 	}
-	
-	
-	
+
 }

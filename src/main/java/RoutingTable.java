@@ -15,7 +15,6 @@ public class RoutingTable implements Serializable {
 	private List<String> neighbors; // directly connected neighbors
 	private List<String> knownNodes; // nodes known to the router
 	private Map<String, Float> immNeighborCost;
-	private Float infinity = 16.0F;
 	private List<Entry> table; // routing table
 	private String filename;
 	private String hostName;
@@ -92,7 +91,7 @@ public class RoutingTable implements Serializable {
 
 	// upon receiving new table, update the current table
 	public synchronized void updateRoutingTable(RoutingTable ownTable, RoutingTable newTable) {
-		// loop through the new routing table entries
+		// fix link cost changes
 
 		for (Entry newEntry : newTable.getTable()) {
 			// create new entry if new route is found
@@ -102,10 +101,7 @@ public class RoutingTable implements Serializable {
 				ownTable.getTable().add(entry);
 				knownNodes.add(newEntry.getDest());
 			} else {
-				/*
-				 * check route in current own table that goes to the same destination and
-				 * compare cost
-				 */
+
 				Float costCurr;
 				for (Entry ownEntry : ownTable.getTable()) {
 
@@ -145,9 +141,10 @@ public class RoutingTable implements Serializable {
 	}
 
 	// method to check link cost change in the file
-	public synchronized void linkCostChange() {
+	public synchronized boolean linkCostChange() {
 		FileReader fileReader;
 		BufferedReader bufferedReader;
+		boolean isLinkChanged = false;
 		try {
 			fileReader = new FileReader(new File(filename));
 			bufferedReader = new BufferedReader(fileReader);
@@ -162,13 +159,19 @@ public class RoutingTable implements Serializable {
 					if (immNeighborCost.containsKey(neighbor)) {
 						if (immNeighborCost.get(neighbor).compareTo(cost) != 0) {
 							// link change detected, update the cost in map and in entry list
+							isLinkChanged = true;
 							System.out.println("-- Link Cost Change Detected -- \n");
 							immNeighborCost.put(neighbor, cost);
 							for (Entry currEntry : table) {
 								if (currEntry.getDest().equals(e.getDest())) {
 									currEntry.setCost(cost);
 									currEntry.setNexthop(e.getDest());
-									break;
+									// break;
+								} else if (currEntry.getDest().equals(currEntry.getSource())) {
+									continue;
+								} else {
+									currEntry.setCost(immNeighborCost.get(currEntry.getDest()));
+									currEntry.setNexthop(currEntry.getDest());
 								}
 							}
 						}
@@ -186,6 +189,8 @@ public class RoutingTable implements Serializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return isLinkChanged;
 	}
 
 }
